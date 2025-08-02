@@ -17,6 +17,7 @@ connectCloudinary()
 app.use(express.json())
 app.use(cors({
     origin:["*","https://dr-appointment-1.onrender.com/","https://dr-appointment-admin-panel.onrender.com/" ],
+    methods:["GET" , "POST" , "PUT" , "PATCH","DELETE"],
     credentials:true
 }))
 
