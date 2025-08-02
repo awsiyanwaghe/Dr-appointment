@@ -4,6 +4,9 @@ A full-stack Doctor Appointment Booking System where users can view doctors' ava
 
 🌐 **Live Website:** [Prescripto on Render](https://dr-appointment-1.onrender.com/)
 
+🛠️ **Admin Panel:** [Prescripto Admin Panel](https://dr-appointment-admin-panel.onrender.com/login)
+
+
 ---
 
 ## ✨ Features
