@@ -1,11 +1,11 @@
 # 🏥 Prescripto
 
 A full-stack Doctor Appointment Booking System where users can view doctors' availability, book appointments, make online payments, and manage their profiles. Built with the MERN Stack and styled using Tailwind CSS.
+🌐 **Live Website:**  
+[🔗 Prescripto User App](https://dr-appointment-1.onrender.com)
 
-🌐 **Live Website:** [Prescripto on Render](https://dr-appointment-1.onrender.com/)
-
-🛠️ **Admin Panel:** [Prescripto Admin Panel](https://dr-appointment-admin-panel.onrender.com/login)
-
+🛠️ **Admin Dashboard:**  
+[🔗 Prescripto Doctor Panel](https://dr-appointment-admin-panel.onrender.com/doctor-dashboard)
 
 ---
 
