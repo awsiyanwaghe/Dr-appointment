@@ -121,16 +121,49 @@ const MyAppoinments = () => {
               <p className='text-sm mt-1'><span className='text-sm text-neutral-700 font-medium'>Date & Time:</span> {slotDateFormate(item.slotDate)} | {item.slotTime}</p>
             </div>
             <div></div>
-            <div className='flex flex-col gap-2 justify-end'>
-              {!item.cancelled && item.payment && !item.isCompleted && <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50'>Paid</button>}
-              {!item.cancelled && !item.payment && !item.isCompleted && <button onClick={() => appointmentRazorPay(item._id)} className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 cursor-pointer '>Pay Online</button>}
-              {!item.cancelled && !item.isCompleted && <button onClick={() => cancelAppointment(item._id)} className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer'>Cancel appointment</button>}
-              {item.cancelled && !item.isCompleted && <button className='sm:min-w-48 py-2 border border-red-500 rounded text-red-500'>Appointment cancelled</button>}
+         <div className='flex flex-col gap-2 justify-end'>
+  {/* Show Paid button if payment is done and not cancelled or completed */}
+  {!item.cancelled && item.payment && !item.isCompleted && (
+    <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50'>
+      Paid
+    </button>
+  )}
 
-              {
-                item.isCompleted && <button className='sm:min-w-48 py-2 border border-green-500 rounded text-green-500'>Completed</button>
-              }
-            </div>
+  {/* Show Pay Online button if payment is not done, not cancelled or completed */}
+  {!item.cancelled && !item.payment && !item.isCompleted && (
+    <button
+      onClick={() => appointmentRazorPay(item._id)}
+      className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 cursor-pointer'
+    >
+      Pay Online
+    </button>
+  )}
+
+  {/* Show Cancel button only if not cancelled, not completed, AND payment is not done */}
+  {!item.cancelled && !item.isCompleted && !item.payment && (
+    <button
+      onClick={() => cancelAppointment(item._id)}
+      className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer'
+    >
+      Cancel appointment
+    </button>
+  )}
+
+  {/* Show "Appointment Cancelled" if cancelled and not completed */}
+  {item.cancelled && !item.isCompleted && (
+    <button className='sm:min-w-48 py-2 border border-red-500 rounded text-red-500'>
+      Appointment cancelled
+    </button>
+  )}
+
+  {/* Show Completed if completed */}
+  {item.isCompleted && (
+    <button className='sm:min-w-48 py-2 border border-green-500 rounded text-green-500'>
+      Completed
+    </button>
+  )}
+</div>
+
           </div>
         ))}
       </div>
