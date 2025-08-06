@@ -52,7 +52,7 @@ A full-stack Doctor Appointment Booking System where users can view doctors' ava
 
 ### Clone the repository:
 ```bash
-git clone https://github.com/yourusername/prescripto.git
+git clone https://github.com/awsiyanwaghe/Dr-appointment
 cd prescripto
 # Install backend dependencies
 cd backend
