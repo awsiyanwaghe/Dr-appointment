@@ -9,6 +9,7 @@ const AppContextProvider = (props) => {
   const CurrencySymbol = '₹'
   const backendUrl = import.meta.env.VITE_BACKEND_URL
   const [doctors, setdoctors] = useState([])
+  const [loading, setLoading] = useState(true)
   const [token, settoken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : false)
   const [userData, setuserData] = useState(false)
 
@@ -16,10 +17,10 @@ const AppContextProvider = (props) => {
 
   const getDoctorsData = async () => {
     try {
+      setLoading(true)   // start loader
       const { data } = await axios.get(backendUrl + '/api/doctor/list')
       if (data.success) {
         setdoctors(data.doctors)
-
       } else {
         toast.error(data.message)
       }
@@ -27,9 +28,11 @@ const AppContextProvider = (props) => {
     } catch (error) {
       console.log(error);
       toast.error(error.message)
-
+    } finally {
+      setLoading(false)  // stop loader
     }
   }
+
 
   const loadUserProfileData = async () => {
     try {
@@ -53,6 +56,7 @@ const AppContextProvider = (props) => {
     doctors, getDoctorsData,
     CurrencySymbol,
     token,
+    loading,              // 👈 expose loading to context
     settoken,
     backendUrl,
     userData,

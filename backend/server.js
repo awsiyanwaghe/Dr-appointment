@@ -17,6 +17,7 @@ connectCloudinary()
 app.use(express.json())
 app.use(cors({
   origin: [
+      "http://localhost:5173",
     "https://dr-appointment-1.onrender.com",
     "https://dr-appointment-admin-panel.onrender.com"
   ],

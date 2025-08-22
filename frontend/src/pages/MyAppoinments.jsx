@@ -133,7 +133,7 @@ const MyAppoinments = () => {
   {!item.cancelled && !item.payment && !item.isCompleted && (
     <button
       onClick={() => appointmentRazorPay(item._id)}
-      className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 cursor-pointer'
+      className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-[#5f6FFF] hover:text-white transition-all duration-300 cursor-pointer active:bg-green-600 active:text-white '
     >
       Pay Online
     </button>
@@ -143,7 +143,7 @@ const MyAppoinments = () => {
   {!item.cancelled && !item.isCompleted && !item.payment && (
     <button
       onClick={() => cancelAppointment(item._id)}
-      className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer'
+      className='text-sm to-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer active:bg-red-600 active:text-white'
     >
       Cancel appointment
     </button>

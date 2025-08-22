@@ -1,11 +1,20 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import App from '../App'
 import { AppContext } from '../context/AppContext'
 
 const TopDoctors = () => {
     const navigate = useNavigate()
-    const {doctors} = useContext(AppContext)
+    const {doctors , loading} = useContext(AppContext)
+
+
+    if (loading) {
+  return (
+    <div className="flex justify-center items-center w-full h-60">
+      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
+
   return (
     <div className='flex flex-col items-center gap-4  my-16 text-gray-900 md:mx-10'>
       <h1 className='text-3xl font-medium'>Top Doctors to Book</h1>
