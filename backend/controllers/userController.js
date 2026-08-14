@@ -74,20 +74,38 @@ const loginUser = async (req, res) => {
 }
 // api to get user profile data 
 
-const getProfile = async (req, res) => {           //  changes kiyay hu 
+// ✅ Get user profile - FIXED for your auth middleware
+const getProfile = async (req, res) => {
     try {
-       
-        const userId = req.body?.userId || req.userId;
-
+        // Auth middleware se userId req.body mein aayega
+        const userId = req.body.userId || req.userId;
+        
         if (!userId) {
-            return res.status(400).json({ success: false, message: "User ID not found" });
+            return res.status(400).json({ 
+                success: false, 
+                message: "User ID not found" 
+            });
         }
 
         const userData = await userModel.findById(userId).select('-password');
-        res.json({ success: true, userData });
+        
+        if (!userData) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User not found" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            userData: userData 
+        });
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: error.message });
+        res.json({ 
+            success: false, 
+            message: error.message 
+        });
     }
 };
 

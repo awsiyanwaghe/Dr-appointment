@@ -20,8 +20,8 @@ const changeAvailablity = async (req, res) => {
 
 const doctorList = async (req, res) => {
     try {
-        const doctors = await doctorModel.find({}).select(["-password", "-email"]);
-
+        // ✅ Email bhi include karo (login ke liye)
+        const doctors = await doctorModel.find({}).select("-password");
         res.json({ success: true, doctors });
     } catch (error) {
         console.log(error);
@@ -33,26 +33,38 @@ const doctorList = async (req, res) => {
 
 const loginDoctor = async (req, res) => {
     try {
+        console.log('🔐 Doctor Login Attempt');
+        console.log('📧 Email:', req.body.email);
+        console.log('🔑 Password:', req.body.password);
+        
         const { email, password } = req.body
 
+        if (!email || !password) {
+            console.log('❌ Missing email or password');
+            return res.json({ success: false, message: 'Email and password required' });
+        }
+
         const doctor = await doctorModel.findOne({ email })
+        console.log('👨‍⚕️ Doctor found:', doctor ? 'Yes' : 'No');
 
         if (!doctor) {
             return res.json({ success: false, message: 'Invalid Credentials' })
         }
 
         const isMatch = await bcrypt.compare(password, doctor.password)
+        console.log('🔑 Password match:', isMatch ? 'Yes' : 'No');
+
         if (isMatch) {
             const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET)
+            console.log('✅ Login successful!');
             res.json({ success: true, token })
         } else {
+            console.log('❌ Password mismatch');
             return res.json({ success: false, message: 'Invalid Credentials' })
-
         }
 
-
     } catch (error) {
-        console.log(error);
+        console.log('❌ Login error:', error);
         res.json({ success: false, message: error.message });
     }
 };

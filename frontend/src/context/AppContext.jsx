@@ -1,87 +1,233 @@
-import { createContext, useEffect, useState } from "react";
-import axios from 'axios'
-import { toast } from "react-toastify";
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const AppContext = createContext();
 
-const AppContextProvider = (props) => {
+const BASE_URL = "http://localhost:4000";
 
-  const CurrencySymbol = '₹'
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-  const [doctors, setdoctors] = useState([])
-  const [token, settoken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : false)
-  const [userData, setuserData] = useState(false)
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
 
-
-
-  const getDoctorsData = async () => {
-    try {
-      const { data } = await axios.get(backendUrl + '/api/doctor/list')
-      if (data.success) {
-        setdoctors(data.doctors)
-
-      } else {
-        toast.error(data.message)
-      }
-
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message)
-
-    }
-  }
-
-  const loadUserProfileData = async () => {
-    try {
-      const { data } = await axios.get(backendUrl + '/api/user/get-profile', { headers: { token } })
-
-      if (data.success) {
-        setuserData(data.userData)
-      } else {
-        toast.error(data.message)
-      }
-
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message)
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
-  }
+    console.log("Request:", config.url, "Token:", !!token);
 
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  const value = {
-    doctors, getDoctorsData,
-    CurrencySymbol,
-    token,
-    settoken,
-    backendUrl,
-    userData,
-    setuserData,                        // chat gpt se changes h 
-    loadUserProfileData
+export const AppProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState([]);
+
+  // Get user profile
+  const fetchUserProfile = async () => {
+    try {
+      const savedToken = localStorage.getItem("token");
+
+      if (!savedToken) {
+        setUser(null);
+        return;
+      }
+
+      const response = await axios.get(
+        `${BASE_URL}/api/user/get-profile`
+      );
+
+      console.log("Profile response:", response.data);
+
+      if (response.data.success) {
+        setUser(response.data.userData);
+      }
+    } catch (error) {
+      console.error("Profile fetch error:", error);
+
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        setToken(null);
+        setUser(null);
+      }
+    }
   };
 
+  // Login
+  const login = async (email, password) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/user/login`,
+        {
+          email,
+          password,
+        }
+      );
 
-  useEffect(() => {
-    getDoctorsData()
-  }, [])
+      console.log("Login response:", response.data);
 
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        setToken(response.data.token);
 
-  useEffect(() => {
-    if (token) {
-      loadUserProfileData()
-    } else {
-      setuserData(false)
+        await fetchUserProfile();
+
+        return {
+          success: true,
+          message: "Logged in successfully",
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Login error:", error);
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Login failed",
+      };
     }
-  }, [token])
+  };
 
+  // Register
+  const register = async (userData) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/user/register`,
+        userData
+      );
 
+      console.log("Register response:", response.data);
 
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        setToken(response.data.token);
+
+        await fetchUserProfile();
+
+        return {
+          success: true,
+          message: "Account created successfully",
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message,
+      };
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Registration failed",
+      };
+    }
+  };
+
+  // Logout
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
+    setAppointments([]);
+  };
+
+  // Fetch doctors
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/api/doctor/list`
+      );
+
+      if (response.data.success) {
+        setDoctors(response.data.doctors);
+      }
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
+
+  // Fetch appointments
+  const fetchUserAppointments = async () => {
+    try {
+      const savedToken = localStorage.getItem("token");
+
+      if (!savedToken) return;
+
+      const response = await axios.get(
+        `${BASE_URL}/api/user/appointments`
+      );
+
+      if (response.data.success) {
+        setAppointments(response.data.appointments);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  // Load data
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+
+      const savedToken = localStorage.getItem("token");
+
+      if (savedToken) {
+        setToken(savedToken);
+        await fetchUserProfile();
+        await fetchUserAppointments();
+      }
+
+      await fetchDoctors();
+
+      setLoading(false);
+    };
+
+    loadData();
+  }, []);
+
+  const contextValue = {
+    backendUrl: BASE_URL,
+
+    user,
+    setUser,
+
+    token,
+    setToken,
+
+    doctors,
+    setDoctors,
+
+    appointments,
+    setAppointments,
+
+    loading,
+    setLoading,
+
+    login,
+    register,
+    logout,
+
+    fetchUserProfile,
+    fetchDoctors,
+    fetchUserAppointments,
+  };
 
   return (
-    <AppContext.Provider value={value}>
-      {props.children}
+    <AppContext.Provider value={contextValue}>
+      {children}
     </AppContext.Provider>
   );
 };
-
-export default AppContextProvider;
