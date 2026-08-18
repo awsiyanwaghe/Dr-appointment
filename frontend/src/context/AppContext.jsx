@@ -3,7 +3,8 @@ import axios from "axios";
 
 export const AppContext = createContext();
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
 axios.interceptors.request.use(
   (config) => {
